@@ -1,0 +1,8 @@
+{
+  "name": "landing-anto",
+  "private": true,
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0",
+    "@octokit/rest": "^21.1.1"
+  }
+}

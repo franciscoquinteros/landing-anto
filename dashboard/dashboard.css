@@ -256,9 +256,10 @@ body::before {
   position: relative;
 }
 
-/* ===== STATS ===== */
+/* ===== STATS (CSS Grid for 4 cards) ===== */
 .stats-bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -273,7 +274,7 @@ body::before {
   padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
-  min-width: 140px;
+  min-width: 0;
   position: relative;
   overflow: hidden;
 }
@@ -286,6 +287,15 @@ body::before {
   pointer-events: none;
 }
 
+.stat-card.highlight {
+  border-left-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.15);
+}
+
+.stat-card.highlight::after {
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.08) 0%, transparent 60%);
+}
+
 .stat-number {
   font-size: 2rem;
   font-weight: 700;
@@ -295,11 +305,54 @@ body::before {
   background-clip: text;
 }
 
+.stat-card.highlight .stat-number {
+  font-size: 1rem;
+  font-weight: 600;
+  -webkit-text-fill-color: var(--accent-cyan);
+  background: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .stat-label {
   font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+}
+
+/* ===== METRICS SORT ===== */
+.metrics-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.metrics-sort label {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metrics-sort select {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.3s var(--ease-out);
+}
+
+.metrics-sort select:focus {
+  outline: none;
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
 /* ===== TABLE ===== */
@@ -331,6 +384,18 @@ tr:hover td {
   background: rgba(255, 255, 255, 0.02);
 }
 
+/* Share column */
+.share-cell {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Removed link styling */
+.removed-link td {
+  opacity: 0.5;
+}
+
 /* Mini bar chart in metrics */
 .metric-bar {
   height: 4px;
@@ -338,6 +403,37 @@ tr:hover td {
   background: var(--gradient-accent);
   margin-top: 4px;
   transition: width 0.6s var(--ease-out);
+}
+
+/* ===== GA NOTICE ===== */
+.ga-notice {
+  margin-top: 1.5rem;
+  padding: 1rem 1.25rem;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid var(--accent-cyan);
+  border-radius: var(--radius-sm);
+}
+
+.ga-notice strong {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 0.25rem;
+}
+
+.ga-notice p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.ga-notice a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+
+.ga-notice a:hover {
+  text-decoration: underline;
 }
 
 /* ===== BUTTONS ===== */
@@ -595,6 +691,33 @@ tr:hover td {
   box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
 }
 
+/* ===== LINK THUMBNAIL PREVIEW ===== */
+.link-thumb-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px dashed var(--glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-size: 1rem;
+  background-size: cover;
+  background-position: center;
+  transition: border-color 0.2s var(--ease-out);
+}
+
+.link-thumb-preview:hover {
+  border-color: var(--accent-violet);
+}
+
+.link-thumb-preview.has-image {
+  border-style: solid;
+  border-color: var(--accent-violet);
+}
+
 .section-actions {
   display: flex;
   gap: 0.5rem;
@@ -808,9 +931,6 @@ tr:hover td {
   .link-row input.link-label,
   .link-row input.link-url {
     flex: 1 1 100%;
-  }
-  .stats-bar {
-    flex-direction: column;
   }
   #toast-container {
     right: 0.75rem;

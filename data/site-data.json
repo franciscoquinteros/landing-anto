@@ -22,7 +22,8 @@
         {
           "id": "contactame-1",
           "label": "Queres una mesa? Hablame! 📩",
-          "url": "https://wa.me/5491164855745"
+          "url": "https://wa.me/5491164855745",
+          "image": "https://ugc.production.linktr.ee/625ec706-6da3-4c43-90b5-d1f57ec515a8_whatapp-icon-vector.jpeg"
         }
       ]
     },
@@ -33,12 +34,14 @@
         {
           "id": "savage-1",
           "label": "DESERT IN ME X PARALLELLE X BNN 24.1 - BNN",
-          "url": "https://planout.com.ar/eventos/es/comprarEvento?idEvento=740&affId=AntonellaLancuba"
+          "url": "https://planout.com.ar/eventos/es/comprarEvento?idEvento=740&affId=AntonellaLancuba",
+          "image": "https://ugc.production.linktr.ee/7b43e2a9-3a83-4993-ba90-6b166b7ac2b3_PARALLELLE-completo-1920.jpeg"
         },
         {
           "id": "savage-2",
           "label": "SAVAGE X MAXI DEGRASSI X BNN 31.1 - BNN",
-          "url": "https://planout.com.ar/eventos/es/comprarEvento?idEvento=717&affId=AntonellaLancuba"
+          "url": "https://planout.com.ar/eventos/es/comprarEvento?idEvento=717&affId=AntonellaLancuba",
+          "image": "https://ugc.production.linktr.ee/f67ff7ab-e28d-4efb-b804-cc149a50fc95_IMG-0828.jpeg"
         },
         {
           "id": "savage-3",
@@ -54,12 +57,14 @@
         {
           "id": "mushroom-1",
           "label": "MUSIC WEEK 14 Y 15 DE FEBRERO",
-          "url": "https://venti.com.ar/evento/mushroom-music-week/alancuba"
+          "url": "https://venti.com.ar/evento/mushroom-music-week/alancuba",
+          "image": "https://ugc.production.linktr.ee/9fced949-35b9-41c2-b2a1-786c334de652_IMG-2851.jpeg"
         },
         {
           "id": "mushroom-2",
           "label": "SASHA DIGWEED OPEN AIR 21.03 AUTODROMO",
-          "url": "https://venti.com.ar/evento/s2gthr-open-air-sasha-and-john-digweed-aut-dromo-ba-21-03-2026/alancuba"
+          "url": "https://venti.com.ar/evento/s2gthr-open-air-sasha-and-john-digweed-aut-dromo-ba-21-03-2026/alancuba",
+          "image": "https://ugc.production.linktr.ee/5465f621-90b5-4e21-9b33-78a4e2453762_2gthr---OPEN-AIR---SASHA---DIGWEED-FEED---FOTO--.jpeg"
         }
       ]
     },
@@ -80,22 +85,26 @@
         {
           "id": "mdp-3",
           "label": "17.1 Danny Howells, Kamilo Sanclemente; Nomade - Samsara",
-          "url": "https://venti.com.ar/evento/nomade-beach-presenta-danny-howells-y-kamilo-sanclemete/alancuba"
+          "url": "https://venti.com.ar/evento/nomade-beach-presenta-danny-howells-y-kamilo-sanclemete/alancuba",
+          "image": "https://ugc.production.linktr.ee/f7a81fe6-8fae-4eb7-8b8f-99258e0a6ce8_1760968045256-lg.jpeg"
         },
         {
           "id": "mdp-4",
           "label": "24.1 Digweed - Nomade Samsara",
-          "url": "https://venti.com.ar/evento/nomade-beach-presenta-john-digweed/alancuba"
+          "url": "https://venti.com.ar/evento/nomade-beach-presenta-john-digweed/alancuba",
+          "image": "https://ugc.production.linktr.ee/becb80ad-7626-4bc1-ae7f-9d8c12a4424c_1765471988264-lg.jpeg"
         },
         {
           "id": "mdp-5",
           "label": "31.1 Guy Mantzur Sahar Z - Nomade Samsara",
-          "url": "https://venti.com.ar/evento/nomade-beach-presenta-guy-mantzur-y-sahar-z/alancuba"
+          "url": "https://venti.com.ar/evento/nomade-beach-presenta-guy-mantzur-y-sahar-z/alancuba",
+          "image": "https://ugc.production.linktr.ee/fbdbe708-f948-4590-acba-4c1ee2960cb2_1760968712511-lg.jpeg"
         },
         {
           "id": "mdp-6",
           "label": "8.1 Patrice Baumel - Nomade Samsara",
-          "url": "https://venti.com.ar/evento/nomade-closing-summer-con-patrice-baumel/alancuba"
+          "url": "https://venti.com.ar/evento/nomade-closing-summer-con-patrice-baumel/alancuba",
+          "image": "https://ugc.production.linktr.ee/70a713ee-db35-41e6-a2df-f9f45f8acb4d_1760969862228-lg.jpeg"
         }
       ]
     }

@@ -7,7 +7,8 @@
       "Bash(npx netlify --version 2>/dev/null || netlify --version 2>/dev/null)",
       "Bash(cd:*)",
       "Bash(head:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:antonellalancuba.com)"
     ]
   }
 }

@@ -14,6 +14,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
 </head>
 <body>
   <!-- Noise texture overlay -->
@@ -111,7 +120,18 @@
             animDelay += 0.06;
             a.target = "_blank";
             a.rel = "noopener noreferrer";
-            a.textContent = link.label;
+            if (link.image) {
+              a.classList.add("has-thumb");
+              const img = document.createElement("img");
+              img.className = "link-thumb";
+              img.src = link.image;
+              img.alt = "";
+              img.loading = "lazy";
+              a.appendChild(img);
+            }
+            const span = document.createElement("span");
+            span.textContent = link.label;
+            a.appendChild(span);
             linksDiv.appendChild(a);
           });
           sectionsEl.appendChild(linksDiv);

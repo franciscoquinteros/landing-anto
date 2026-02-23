@@ -1,15 +1,10 @@
 import { getStore } from "@netlify/blobs";
-import { readFileSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
-
-const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default async (req, context) => {
   try {
     const store = getStore("site-data");
     const data = await store.get("current");
-    if (data) {
+    if (data && data !== "null") {
       return new Response(data, {
         headers: {
           "Content-Type": "application/json",
@@ -21,10 +16,12 @@ export default async (req, context) => {
     console.error("Failed to read from blob store:", e);
   }
 
-  // Fall back to static file if blob doesn't exist yet
+  // Fall back to static file via fetch (avoids filesystem path issues in Functions v2)
   try {
-    const filePath = resolve(__dirname, "../../data/site-data.json");
-    const data = readFileSync(filePath, "utf8");
+    const url = new URL("/data/site-data.json", req.url);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Static file fetch failed: ${res.status}`);
+    const data = await res.text();
     return new Response(data, {
       headers: {
         "Content-Type": "application/json",
@@ -32,6 +29,7 @@ export default async (req, context) => {
       },
     });
   } catch (e) {
+    console.error("Failed to fetch static fallback:", e);
     return new Response("Site data not found", { status: 404 });
   }
 };

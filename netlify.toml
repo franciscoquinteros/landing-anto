@@ -4,3 +4,13 @@
 
 [functions]
   included_files = ["data/**"]
+
+[[redirects]]
+  from = "/admin.html"
+  to = "/dashboard"
+  status = 301
+
+[[redirects]]
+  from = "/admin"
+  to = "/dashboard"
+  status = 301

@@ -396,6 +396,19 @@ h1 {
   transition-duration: 0.1s;
 }
 
+/* ===== LINK THUMBNAILS ===== */
+.link-btn.has-thumb {
+  gap: var(--space-sm);
+}
+
+.link-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 /* ===== FOOTER ===== */
 .footer {
   display: flex;

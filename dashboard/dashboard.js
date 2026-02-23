@@ -2,6 +2,8 @@
   let token = sessionStorage.getItem("admin_token");
   let siteData = null;
   let metrics = {};
+  let currentSort = "most";
+  const pendingLinkImages = new Map();
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -54,7 +56,6 @@
     function tick(now) {
       const elapsed = now - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       el.textContent = Math.round(start + diff * eased);
       if (progress < 1) requestAnimationFrame(tick);
@@ -94,10 +95,10 @@
     const toggle = $("#password-toggle");
     if (input.type === "password") {
       input.type = "text";
-      toggle.textContent = "🙈";
+      toggle.textContent = "\u{1F648}";
     } else {
       input.type = "password";
-      toggle.textContent = "👁";
+      toggle.textContent = "\u{1F441}";
     }
   });
 
@@ -118,9 +119,8 @@
       if (!res.ok) {
         errorEl.textContent = data.error || "Login failed";
         errorEl.hidden = false;
-        // Shake animation
         loginBox.classList.remove("shake");
-        void loginBox.offsetWidth; // force reflow
+        void loginBox.offsetWidth;
         loginBox.classList.add("shake");
         return;
       }
@@ -181,7 +181,6 @@
     const tbody = $("#metrics-table tbody");
     tbody.innerHTML = "";
     let total = 0;
-    let maxClicks = 0;
 
     // Build a flat list of all links
     const allLinks = [];
@@ -192,38 +191,67 @@
       });
     }
 
-    // Find max for bar chart proportions
-    const allCounts = allLinks.map((l) => metrics[l.id] || 0);
-    Object.keys(metrics).forEach((key) => {
-      if (!allLinks.find((l) => l.id === key)) allCounts.push(metrics[key]);
-    });
-    maxClicks = Math.max(...allCounts, 1);
-
-    // Add metrics entries
+    // Collect all counts (including removed links)
     const shown = new Set();
+    const entries = [];
+
     allLinks.forEach((link) => {
       const count = metrics[link.id] || 0;
       total += count;
       shown.add(link.id);
-      const tr = document.createElement("tr");
-      const barWidth = Math.round((count / maxClicks) * 100);
-      tr.innerHTML = `<td>${esc(link.label)}</td><td><code>${esc(link.id)}</code></td><td>${count}<div class="metric-bar" style="width: ${barWidth}%"></div></td>`;
-      tbody.appendChild(tr);
+      entries.push({ label: link.label, id: link.id, count, removed: false });
     });
 
-    // Show any extra metric keys not in current data
+    // Extra metric keys not in current data (removed links)
     Object.keys(metrics).forEach((key) => {
       if (!shown.has(key)) {
         total += metrics[key];
-        const barWidth = Math.round((metrics[key] / maxClicks) * 100);
-        const tr = document.createElement("tr");
-        tr.innerHTML = `<td><em>(removed)</em></td><td><code>${esc(key)}</code></td><td>${metrics[key]}<div class="metric-bar" style="width: ${barWidth}%"></div></td>`;
-        tbody.appendChild(tr);
+        entries.push({ label: "(removed)", id: key, count: metrics[key], removed: true });
       }
     });
 
+    // Sort entries
+    switch (currentSort) {
+      case "most":
+        entries.sort((a, b) => b.count - a.count);
+        break;
+      case "fewest":
+        entries.sort((a, b) => a.count - b.count);
+        break;
+      case "alpha":
+        entries.sort((a, b) => a.label.localeCompare(b.label));
+        break;
+    }
+
+    // Summary stats
+    const activeCount = allLinks.length;
+    const avg = activeCount > 0 ? Math.round(total / activeCount) : 0;
+    let topEntry = entries.length > 0 ? entries.reduce((a, b) => a.count >= b.count ? a : b) : null;
+
     animateCount($("#total-clicks"), total);
+    animateCount($("#active-links"), activeCount);
+    animateCount($("#avg-clicks"), avg);
+    $("#top-link-name").textContent = topEntry && topEntry.count > 0 ? topEntry.label : "\u2014";
+
+    // Find max for bar chart proportions
+    const maxClicks = Math.max(...entries.map((e) => e.count), 1);
+
+    // Render rows
+    entries.forEach((entry) => {
+      const share = total > 0 ? ((entry.count / total) * 100).toFixed(1) : "0.0";
+      const barWidth = Math.round((entry.count / maxClicks) * 100);
+      const tr = document.createElement("tr");
+      if (entry.removed) tr.classList.add("removed-link");
+      tr.innerHTML = `<td>${entry.removed ? "<em>" + esc(entry.label) + "</em>" : esc(entry.label)}</td><td><code>${esc(entry.id)}</code></td><td>${entry.count}<div class="metric-bar" style="width: ${barWidth}%"></div></td><td class="share-cell">${share}%</td>`;
+      tbody.appendChild(tr);
+    });
   }
+
+  // Sort dropdown
+  $("#sort-select").addEventListener("change", (e) => {
+    currentSort = e.target.value;
+    renderMetrics();
+  });
 
   $("#refresh-metrics").addEventListener("click", async () => {
     const btn = $("#refresh-metrics");
@@ -244,13 +272,17 @@
       block.dataset.sectionIndex = si;
 
       let html = `<div class="section-header">
-        <span class="drag-handle" title="Drag to reorder">⁞⁞</span>
+        <span class="drag-handle" title="Drag to reorder">\u205E\u205E</span>
         <input type="text" value="${escAttr(section.title)}" data-field="title" placeholder="Section title">
         <button class="btn-small btn-danger delete-section" title="Delete section">&times;</button>
       </div>`;
 
       section.links.forEach((link, li) => {
+        const thumbStyle = link.image ? `background-image: url(${escAttr(link.image)})` : '';
+        const thumbClass = link.image ? 'link-thumb-preview has-image' : 'link-thumb-preview';
         html += `<div class="link-row" data-link-index="${li}">
+          <div class="${thumbClass}" style="${thumbStyle}" data-link-id="${escAttr(link.id)}" title="Click to upload image">${link.image ? '' : '\u{1F4F7}'}</div>
+          <input type="file" class="link-image-input" accept="image/*" hidden>
           <input class="link-label" type="text" value="${escAttr(link.label)}" placeholder="Label" data-field="label">
           <input class="link-url" type="text" value="${escAttr(link.url)}" placeholder="URL" data-field="url">
           <button class="move-up" title="Move up">&uarr;</button>
@@ -333,6 +365,35 @@
         }
       });
     });
+
+    // Link image upload
+    container.querySelectorAll(".link-thumb-preview").forEach((thumb) => {
+      thumb.addEventListener("click", () => {
+        const row = thumb.closest(".link-row");
+        row.querySelector(".link-image-input").click();
+      });
+    });
+
+    container.querySelectorAll(".link-image-input").forEach((input) => {
+      input.addEventListener("change", (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const row = input.closest(".link-row");
+        const block = row.closest(".section-block");
+        const si = parseInt(block.dataset.sectionIndex);
+        const li = parseInt(row.dataset.linkIndex);
+        const linkId = siteData.sections[si].links[li].id;
+        const thumb = row.querySelector(".link-thumb-preview");
+
+        processLinkImageFile(file, (dataUrl, base64) => {
+          pendingLinkImages.set(linkId, base64);
+          thumb.style.backgroundImage = `url(${dataUrl})`;
+          thumb.textContent = "";
+          thumb.classList.add("has-image");
+          showToast("Image ready \u2014 save to apply");
+        });
+      });
+    });
   }
 
   function syncLinksFromDOM() {
@@ -362,6 +423,25 @@
     setLoading(btn, true);
 
     try {
+      // Upload pending link images first
+      for (const [linkId, imageBase64] of pendingLinkImages) {
+        const uploadRes = await fetch("/api/upload-link-image", {
+          method: "POST",
+          headers: authHeaders(),
+          body: JSON.stringify({ linkId, imageBase64 }),
+        });
+        if (!uploadRes.ok) throw new Error(`Image upload failed for ${linkId}`);
+        const uploadData = await uploadRes.json();
+        for (const section of siteData.sections) {
+          const link = section.links.find((l) => l.id === linkId);
+          if (link) {
+            link.image = uploadData.image;
+            break;
+          }
+        }
+      }
+      pendingLinkImages.clear();
+
       const res = await fetch("/api/save-data", {
         method: "POST",
         headers: authHeaders(),
@@ -420,6 +500,24 @@
     if (!file) return;
     processImageFile(file);
   });
+
+  function processLinkImageFile(file, callback) {
+    const canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 200;
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    img.onload = () => {
+      const size = Math.min(img.width, img.height);
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
+      ctx.drawImage(img, sx, sy, size, size, 0, 0, 200, 200);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      const base64 = dataUrl.split(",")[1];
+      callback(dataUrl, base64);
+    };
+    img.src = URL.createObjectURL(file);
+  }
 
   function processImageFile(file) {
     const canvas = document.createElement("canvas");

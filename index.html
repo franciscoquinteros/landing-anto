@@ -12,17 +12,40 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎶</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- Noise texture overlay -->
+  <div class="noise-overlay"></div>
+
+  <!-- Floating background orbs -->
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
   <main class="container">
-    <div class="avatar anim-in" id="avatar" style="animation-delay: 0s">A</div>
-    <h1 id="site-name" class="anim-in" style="animation-delay: 0.1s">Anto Lancuba</h1>
-    <p class="bio anim-in" id="site-bio" style="animation-delay: 0.2s"></p>
-    <div class="socials anim-in" id="socials" style="animation-delay: 0.3s"></div>
+    <div class="hero">
+      <div class="avatar-ring anim-in" style="animation-delay: 0s">
+        <div class="avatar" id="avatar">A</div>
+        <span class="status-dot"></span>
+      </div>
+      <h1 id="site-name" class="anim-in" style="animation-delay: 0.1s">Anto Lancuba</h1>
+      <p class="bio anim-in" id="site-bio" style="animation-delay: 0.2s"></p>
+      <div class="socials anim-in" id="socials" style="animation-delay: 0.3s"></div>
+    </div>
+
+    <div class="hero-divider anim-in" style="animation-delay: 0.35s"></div>
+
     <div id="sections"></div>
   </main>
+
+  <footer class="footer anim-in" style="animation-delay: 1.2s">
+    <span class="footer-brand">AL</span>
+    <span class="footer-domain">antonellalancuba.com</span>
+  </footer>
 
   <script>
     const SOCIAL_ICONS = {

@@ -4,8 +4,3 @@
 
 [functions]
   included_files = ["data/**"]
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200

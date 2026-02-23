@@ -1,7 +1,7 @@
-const { Octokit } = require("@octokit/rest");
+import { Octokit } from "@octokit/rest";
 
-function verifyAuth(event) {
-  const auth = event.headers.authorization || "";
+function verifyAuth(req) {
+  const auth = req.headers.get("authorization") || "";
   if (!auth.startsWith("Bearer ")) return false;
   const token = auth.slice(7);
   try {
@@ -13,17 +13,17 @@ function verifyAuth(event) {
   }
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method not allowed" };
+export default async (req, context) => {
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
-  if (!verifyAuth(event)) {
-    return { statusCode: 401, body: JSON.stringify({ error: "Unauthorized" }) };
+  if (!verifyAuth(req)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const siteData = JSON.parse(event.body);
+    const siteData = await req.json();
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
     const [owner, repo] = process.env.GITHUB_REPO.split("/");
     const filePath = "data/site-data.json";
@@ -48,13 +48,13 @@ exports.handler = async (event) => {
       sha,
     });
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ok: true }),
-    };
+    return Response.json({ ok: true });
   } catch (e) {
     console.error("Failed to save data:", e);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to save data" }) };
+    return Response.json({ error: "Failed to save data" }, { status: 500 });
   }
+};
+
+export const config = {
+  path: "/api/save-data",
 };

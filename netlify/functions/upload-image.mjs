@@ -1,7 +1,7 @@
-const { Octokit } = require("@octokit/rest");
+import { Octokit } from "@octokit/rest";
 
-function verifyAuth(event) {
-  const auth = event.headers.authorization || "";
+function verifyAuth(req) {
+  const auth = req.headers.get("authorization") || "";
   if (!auth.startsWith("Bearer ")) return false;
   const token = auth.slice(7);
   try {
@@ -13,19 +13,19 @@ function verifyAuth(event) {
   }
 }
 
-exports.handler = async (event) => {
-  if (event.httpMethod !== "POST") {
-    return { statusCode: 405, body: "Method not allowed" };
+export default async (req, context) => {
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405 });
   }
 
-  if (!verifyAuth(event)) {
-    return { statusCode: 401, body: JSON.stringify({ error: "Unauthorized" }) };
+  if (!verifyAuth(req)) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { imageBase64 } = JSON.parse(event.body);
+    const { imageBase64 } = await req.json();
     if (!imageBase64) {
-      return { statusCode: 400, body: JSON.stringify({ error: "Missing imageBase64" }) };
+      return Response.json({ error: "Missing imageBase64" }, { status: 400 });
     }
 
     const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
@@ -66,13 +66,13 @@ exports.handler = async (event) => {
       sha: fileData.sha,
     });
 
-    return {
-      statusCode: 200,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ok: true, image: "/data/profile.jpg" }),
-    };
+    return Response.json({ ok: true, image: "/data/profile.jpg" });
   } catch (e) {
     console.error("Failed to upload image:", e);
-    return { statusCode: 500, body: JSON.stringify({ error: "Failed to upload image" }) };
+    return Response.json({ error: "Failed to upload image" }, { status: 500 });
   }
+};
+
+export const config = {
+  path: "/api/upload-image",
 };

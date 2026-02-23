@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /c/Users/Fran/Desktop/Projects/landing-anto && netlify api provisionSiteTLSCertificate --data '{\"site_id\": \"caf9def5-4769-44cb-8525-7e937d39167f\"}' 2>&1)",
+      "Bash(cd /c/Users/Fran/Desktop/Projects/landing-anto && netlify api showSiteTLSCertificate --data '{\"site_id\": \"caf9def5-4769-44cb-8525-7e937d39167f\"}' 2>&1)",
+      "Bash(sleep 45 && cd /c/Users/Fran/Desktop/Projects/landing-anto && netlify api provisionSiteTLSCertificate --data '{\"site_id\": \"caf9def5-4769-44cb-8525-7e937d39167f\"}' 2>&1)",
+      "Bash(npx netlify --version 2>/dev/null || netlify --version 2>/dev/null)",
+      "Bash(cd:*)",
+      "Bash(head:*)",
+      "WebSearch"
+    ]
+  }
+}

@@ -1,4 +1,5 @@
 import { Octokit } from "@octokit/rest";
+import { getStore } from "@netlify/blobs";
 
 function verifyAuth(req) {
   const auth = req.headers.get("authorization") || "";
@@ -47,6 +48,10 @@ export default async (req, context) => {
       content,
       sha,
     });
+
+    // Write to Netlify Blobs for instant reads (no rebuild needed)
+    const store = getStore("site-data");
+    await store.setJSON("current", siteData);
 
     return Response.json({ ok: true });
   } catch (e) {

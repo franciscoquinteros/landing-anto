@@ -5,7 +5,16 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-function loadSiteData() {
+async function loadSiteData() {
+  // Try blob store first (instant updates)
+  try {
+    const store = getStore("site-data");
+    const data = await store.get("current", { type: "json" });
+    if (data) return data;
+  } catch (e) {
+    console.error("Failed to read site data from blob:", e);
+  }
+  // Fall back to static file
   const filePath = resolve(__dirname, "../../data/site-data.json");
   return JSON.parse(readFileSync(filePath, "utf8"));
 }
@@ -30,7 +39,7 @@ export default async (req, context) => {
     return new Response("Missing id parameter", { status: 400 });
   }
 
-  const data = loadSiteData();
+  const data = await loadSiteData();
   const targetUrl = findLinkUrl(data, id);
 
   if (!targetUrl) {

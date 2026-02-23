@@ -155,7 +155,7 @@
 
   async function loadSiteData() {
     try {
-      const res = await fetch("/data/site-data.json");
+      const res = await fetch("/api/site-data");
       siteData = await res.json();
       renderLinksEditor();
       renderProfile();
@@ -368,7 +368,7 @@
         body: JSON.stringify(siteData),
       });
       if (!res.ok) throw new Error("Save failed");
-      showToast("Saved! Site will redeploy shortly.");
+      showToast("Saved! Changes are live!");
     } catch (err) {
       showToast("Error saving: " + err.message, "error");
     } finally {
@@ -483,7 +483,7 @@
         body: JSON.stringify(siteData),
       });
       if (!res.ok) throw new Error("Save failed");
-      showToast("Profile saved! Site will redeploy shortly.");
+      showToast("Profile saved! Changes are live!");
     } catch (err) {
       showToast("Error saving: " + err.message, "error");
     } finally {

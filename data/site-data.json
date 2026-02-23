@@ -1,6 +1,6 @@
 {
   "name": "Anto Lancuba",
-  "bio": "\ud83d\udccd Buenos Aires, Argentina\nRRPP \u2014 Eventos de m\u00fasica electr\u00f3nica\nSVG PROD \u2014 MUSHROOM",
+  "bio": "📍 Buenos Aires, Argentina\nRRPP — Eventos de música electrónica\nSVG PROD — MUSHROOM",
   "image": null,
   "socials": [
     {
@@ -21,7 +21,7 @@
       "links": [
         {
           "id": "contactame-1",
-          "label": "Queres una mesa? Hablame! \ud83d\udce9",
+          "label": "Queres una mesa? Hablame! 📩",
           "url": "https://wa.me/5491164855745"
         }
       ]
@@ -65,7 +65,7 @@
     },
     {
       "id": "mar-del-plata",
-      "title": "MAR DEL PLATA \ud83c\udde6\ud83c\uddf7",
+      "title": "MAR DEL PLATA 🇦🇷",
       "links": [
         {
           "id": "mdp-1",

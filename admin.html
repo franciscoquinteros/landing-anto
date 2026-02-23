@@ -6,17 +6,20 @@
   <title>Admin - Anto Lancuba</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
   <!-- Login Screen -->
   <div id="login-screen" class="login-screen">
-    <div class="login-box">
+    <div class="login-box" id="login-box">
       <h1>Admin Panel</h1>
       <p>Anto Lancuba</p>
       <form id="login-form">
-        <input type="password" id="login-password" placeholder="Password" required>
+        <div class="password-field">
+          <input type="password" id="login-password" placeholder="Password" required>
+          <button type="button" class="password-toggle" id="password-toggle" aria-label="Toggle password visibility">👁</button>
+        </div>
         <button type="submit">Login</button>
         <p id="login-error" class="error" hidden></p>
       </form>
@@ -36,59 +39,80 @@
       <button class="tab" data-tab="profile">Profile</button>
     </nav>
 
-    <!-- Dashboard Tab -->
-    <section id="tab-dashboard" class="tab-content active">
-      <h2>Click Metrics</h2>
-      <div class="stats-bar">
-        <div class="stat-card">
-          <span class="stat-number" id="total-clicks">0</span>
-          <span class="stat-label">Total Clicks</span>
+    <div class="tab-wrapper">
+      <!-- Dashboard Tab -->
+      <section id="tab-dashboard" class="tab-content active">
+        <h2>Click Metrics</h2>
+        <div class="stats-bar">
+          <div class="stat-card">
+            <span class="stat-number" id="total-clicks">0</span>
+            <span class="stat-label">Total Clicks</span>
+          </div>
         </div>
-      </div>
-      <table id="metrics-table">
-        <thead>
-          <tr><th>Link</th><th>ID</th><th>Clicks</th></tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <button id="refresh-metrics" class="btn">Refresh</button>
-    </section>
+        <table id="metrics-table">
+          <thead>
+            <tr><th>Link</th><th>ID</th><th>Clicks</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <button id="refresh-metrics" class="btn">Refresh</button>
+      </section>
 
-    <!-- Links Tab -->
-    <section id="tab-links" class="tab-content">
-      <h2>Manage Links</h2>
-      <div id="sections-editor"></div>
-      <div class="actions-bar">
-        <button id="add-section" class="btn">+ Add Section</button>
-        <button id="save-links" class="btn btn-primary">Save Changes</button>
-      </div>
-      <p id="links-status" class="status" hidden></p>
-    </section>
+      <!-- Links Tab -->
+      <section id="tab-links" class="tab-content">
+        <h2>Manage Links</h2>
+        <div id="sections-editor"></div>
+        <div class="actions-bar">
+          <button id="add-section" class="btn btn-add">+ Add Section</button>
+          <button id="save-links" class="btn btn-primary">Save Changes</button>
+        </div>
+      </section>
 
-    <!-- Profile Tab -->
-    <section id="tab-profile" class="tab-content">
-      <h2>Profile</h2>
-      <div class="form-group">
-        <label for="profile-name">Name</label>
-        <input type="text" id="profile-name">
-      </div>
-      <div class="form-group">
-        <label for="profile-bio">Bio (use new lines for line breaks)</label>
-        <textarea id="profile-bio" rows="4"></textarea>
-      </div>
-      <div class="form-group">
-        <label>Profile Image</label>
-        <div class="image-upload">
-          <div class="avatar-preview" id="avatar-preview">A</div>
-          <input type="file" id="image-input" accept="image/*">
+      <!-- Profile Tab -->
+      <section id="tab-profile" class="tab-content">
+        <h2>Profile</h2>
+        <div class="form-group">
+          <label for="profile-name">Name</label>
+          <input type="text" id="profile-name">
+        </div>
+        <div class="form-group">
+          <label for="profile-bio">Bio (use new lines for line breaks)</label>
+          <textarea id="profile-bio" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Profile Image</label>
+          <div class="image-upload">
+            <div class="avatar-preview" id="avatar-preview">A</div>
+            <div class="drop-zone" id="drop-zone">
+              <input type="file" id="image-input" accept="image/*">
+              <div class="drop-zone-text">
+                <span class="drop-zone-icon">📷</span>
+                Drop image here or click to browse
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="actions-bar">
           <button id="upload-image" class="btn" disabled>Upload Image</button>
+          <button id="save-profile" class="btn btn-primary">Save Profile</button>
         </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="confirm-modal">
+    <div class="modal-card">
+      <h3 id="confirm-title">Are you sure?</h3>
+      <p id="confirm-message">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn" id="confirm-cancel">Cancel</button>
+        <button class="btn btn-danger" id="confirm-ok">Delete</button>
       </div>
-      <div class="actions-bar">
-        <button id="save-profile" class="btn btn-primary">Save Profile</button>
-      </div>
-      <p id="profile-status" class="status" hidden></p>
-    </section>
+    </div>
   </div>
 
   <script src="admin.js"></script>

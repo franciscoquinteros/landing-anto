@@ -6,6 +6,73 @@
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
 
+  // --- Toast Notifications ---
+  function showToast(message, type = "success", duration = 3000) {
+    const container = $("#toast-container");
+    const toast = document.createElement("div");
+    toast.className = `toast ${type === "error" ? "error" : ""}`;
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+      toast.classList.add("removing");
+      toast.addEventListener("animationend", () => toast.remove());
+    }, duration);
+  }
+
+  // --- Confirmation Modal ---
+  function showConfirm(title, message) {
+    return new Promise((resolve) => {
+      const modal = $("#confirm-modal");
+      $("#confirm-title").textContent = title;
+      $("#confirm-message").textContent = message;
+      modal.classList.add("active");
+
+      function cleanup(result) {
+        modal.classList.remove("active");
+        $("#confirm-ok").removeEventListener("click", onOk);
+        $("#confirm-cancel").removeEventListener("click", onCancel);
+        resolve(result);
+      }
+
+      function onOk() { cleanup(true); }
+      function onCancel() { cleanup(false); }
+
+      $("#confirm-ok").addEventListener("click", onOk);
+      $("#confirm-cancel").addEventListener("click", onCancel);
+    });
+  }
+
+  // --- Animated Counter ---
+  function animateCount(el, target) {
+    const duration = 600;
+    const start = parseInt(el.textContent) || 0;
+    const diff = target - start;
+    if (diff === 0) { el.textContent = target; return; }
+    const startTime = performance.now();
+
+    function tick(now) {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.round(start + diff * eased);
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  // --- Button Loading State ---
+  function setLoading(btn, loading) {
+    if (loading) {
+      btn.classList.add("loading");
+      btn.disabled = true;
+    } else {
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+  }
+
   // --- Auth ---
   function showAdmin() {
     $("#login-screen").hidden = true;
@@ -21,10 +88,24 @@
     token = null;
   }
 
+  // Password toggle
+  $("#password-toggle").addEventListener("click", () => {
+    const input = $("#login-password");
+    const toggle = $("#password-toggle");
+    if (input.type === "password") {
+      input.type = "text";
+      toggle.textContent = "🙈";
+    } else {
+      input.type = "password";
+      toggle.textContent = "👁";
+    }
+  });
+
   $("#login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const password = $("#login-password").value;
     const errorEl = $("#login-error");
+    const loginBox = $("#login-box");
     errorEl.hidden = true;
 
     try {
@@ -37,6 +118,10 @@
       if (!res.ok) {
         errorEl.textContent = data.error || "Login failed";
         errorEl.hidden = false;
+        // Shake animation
+        loginBox.classList.remove("shake");
+        void loginBox.offsetWidth; // force reflow
+        loginBox.classList.add("shake");
         return;
       }
       token = data.token;
@@ -45,6 +130,9 @@
     } catch (err) {
       errorEl.textContent = "Connection error";
       errorEl.hidden = false;
+      loginBox.classList.remove("shake");
+      void loginBox.offsetWidth;
+      loginBox.classList.add("shake");
     }
   });
 
@@ -93,6 +181,7 @@
     const tbody = $("#metrics-table tbody");
     tbody.innerHTML = "";
     let total = 0;
+    let maxClicks = 0;
 
     // Build a flat list of all links
     const allLinks = [];
@@ -103,6 +192,13 @@
       });
     }
 
+    // Find max for bar chart proportions
+    const allCounts = allLinks.map((l) => metrics[l.id] || 0);
+    Object.keys(metrics).forEach((key) => {
+      if (!allLinks.find((l) => l.id === key)) allCounts.push(metrics[key]);
+    });
+    maxClicks = Math.max(...allCounts, 1);
+
     // Add metrics entries
     const shown = new Set();
     allLinks.forEach((link) => {
@@ -110,7 +206,8 @@
       total += count;
       shown.add(link.id);
       const tr = document.createElement("tr");
-      tr.innerHTML = `<td>${esc(link.label)}</td><td><code>${esc(link.id)}</code></td><td>${count}</td>`;
+      const barWidth = Math.round((count / maxClicks) * 100);
+      tr.innerHTML = `<td>${esc(link.label)}</td><td><code>${esc(link.id)}</code></td><td>${count}<div class="metric-bar" style="width: ${barWidth}%"></div></td>`;
       tbody.appendChild(tr);
     });
 
@@ -118,16 +215,22 @@
     Object.keys(metrics).forEach((key) => {
       if (!shown.has(key)) {
         total += metrics[key];
+        const barWidth = Math.round((metrics[key] / maxClicks) * 100);
         const tr = document.createElement("tr");
-        tr.innerHTML = `<td><em>(removed)</em></td><td><code>${esc(key)}</code></td><td>${metrics[key]}</td>`;
+        tr.innerHTML = `<td><em>(removed)</em></td><td><code>${esc(key)}</code></td><td>${metrics[key]}<div class="metric-bar" style="width: ${barWidth}%"></div></td>`;
         tbody.appendChild(tr);
       }
     });
 
-    $("#total-clicks").textContent = total;
+    animateCount($("#total-clicks"), total);
   }
 
-  $("#refresh-metrics").addEventListener("click", loadMetrics);
+  $("#refresh-metrics").addEventListener("click", async () => {
+    const btn = $("#refresh-metrics");
+    setLoading(btn, true);
+    await loadMetrics();
+    setLoading(btn, false);
+  });
 
   // --- Links Editor ---
   function renderLinksEditor() {
@@ -141,6 +244,7 @@
       block.dataset.sectionIndex = si;
 
       let html = `<div class="section-header">
+        <span class="drag-handle" title="Drag to reorder">⁞⁞</span>
         <input type="text" value="${escAttr(section.title)}" data-field="title" placeholder="Section title">
         <button class="btn-small btn-danger delete-section" title="Delete section">&times;</button>
       </div>`;
@@ -156,7 +260,7 @@
       });
 
       html += `<div class="section-actions">
-        <button class="btn add-link">+ Add Link</button>
+        <button class="btn btn-add add-link">+ Add Link</button>
       </div>`;
 
       block.innerHTML = html;
@@ -165,11 +269,15 @@
 
     // Attach events
     container.querySelectorAll(".delete-section").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", async (e) => {
         const block = e.target.closest(".section-block");
         const si = parseInt(block.dataset.sectionIndex);
+        const title = siteData.sections[si].title || "this section";
+        const confirmed = await showConfirm("Delete Section", `Delete "${title}" and all its links?`);
+        if (!confirmed) return;
         siteData.sections.splice(si, 1);
         renderLinksEditor();
+        showToast("Section deleted");
       });
     });
 
@@ -184,13 +292,17 @@
     });
 
     container.querySelectorAll(".delete-link").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+      btn.addEventListener("click", async (e) => {
         const block = e.target.closest(".section-block");
         const row = e.target.closest(".link-row");
         const si = parseInt(block.dataset.sectionIndex);
         const li = parseInt(row.dataset.linkIndex);
+        const label = siteData.sections[si].links[li].label || "this link";
+        const confirmed = await showConfirm("Delete Link", `Delete "${label}"?`);
+        if (!confirmed) return;
         siteData.sections[si].links.splice(li, 1);
         renderLinksEditor();
+        showToast("Link deleted");
       });
     });
 
@@ -246,10 +358,8 @@
 
   $("#save-links").addEventListener("click", async () => {
     syncLinksFromDOM();
-    const statusEl = $("#links-status");
-    statusEl.hidden = false;
-    statusEl.className = "status";
-    statusEl.textContent = "Saving...";
+    const btn = $("#save-links");
+    setLoading(btn, true);
 
     try {
       const res = await fetch("/api/save-data", {
@@ -258,10 +368,11 @@
         body: JSON.stringify(siteData),
       });
       if (!res.ok) throw new Error("Save failed");
-      statusEl.textContent = "Saved! Site will redeploy shortly.";
+      showToast("Saved! Site will redeploy shortly.");
     } catch (err) {
-      statusEl.className = "status error";
-      statusEl.textContent = "Error saving: " + err.message;
+      showToast("Error saving: " + err.message, "error");
+    } finally {
+      setLoading(btn, false);
     }
   });
 
@@ -283,17 +394,40 @@
 
   let selectedImageBase64 = null;
 
+  // Drop zone handlers
+  const dropZone = $("#drop-zone");
+
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith("image/")) {
+      processImageFile(file);
+    }
+  });
+
   $("#image-input").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    processImageFile(file);
+  });
 
+  function processImageFile(file) {
     const canvas = document.createElement("canvas");
     canvas.width = 400;
     canvas.height = 400;
     const ctx = canvas.getContext("2d");
     const img = new Image();
     img.onload = () => {
-      // Crop to square center
       const size = Math.min(img.width, img.height);
       const sx = (img.width - size) / 2;
       const sy = (img.height - size) / 2;
@@ -302,20 +436,19 @@
       const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
       selectedImageBase64 = dataUrl.split(",")[1];
 
-      // Update preview
       const preview = $("#avatar-preview");
       preview.textContent = "";
       preview.style.backgroundImage = `url(${dataUrl})`;
       $("#upload-image").disabled = false;
+      showToast("Image ready to upload");
     };
     img.src = URL.createObjectURL(file);
-  });
+  }
 
   $("#upload-image").addEventListener("click", async () => {
     if (!selectedImageBase64) return;
     const btn = $("#upload-image");
-    btn.disabled = true;
-    btn.textContent = "Uploading...";
+    setLoading(btn, true);
 
     try {
       const res = await fetch("/api/upload-image", {
@@ -326,26 +459,22 @@
       if (!res.ok) throw new Error("Upload failed");
       const data = await res.json();
       siteData.image = data.image;
-      btn.textContent = "Uploaded!";
       selectedImageBase64 = null;
+      showToast("Image uploaded!");
     } catch (err) {
-      btn.textContent = "Upload failed";
-    }
-
-    setTimeout(() => {
-      btn.textContent = "Upload Image";
+      showToast("Upload failed: " + err.message, "error");
+    } finally {
+      setLoading(btn, false);
       btn.disabled = !selectedImageBase64;
-    }, 2000);
+    }
   });
 
   $("#save-profile").addEventListener("click", async () => {
     siteData.name = $("#profile-name").value;
     siteData.bio = $("#profile-bio").value;
 
-    const statusEl = $("#profile-status");
-    statusEl.hidden = false;
-    statusEl.className = "status";
-    statusEl.textContent = "Saving...";
+    const btn = $("#save-profile");
+    setLoading(btn, true);
 
     try {
       const res = await fetch("/api/save-data", {
@@ -354,10 +483,11 @@
         body: JSON.stringify(siteData),
       });
       if (!res.ok) throw new Error("Save failed");
-      statusEl.textContent = "Saved! Site will redeploy shortly.";
+      showToast("Profile saved! Site will redeploy shortly.");
     } catch (err) {
-      statusEl.className = "status error";
-      statusEl.textContent = "Error saving: " + err.message;
+      showToast("Error saving: " + err.message, "error");
+    } finally {
+      setLoading(btn, false);
     }
   });
 

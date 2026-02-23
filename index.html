@@ -12,15 +12,15 @@
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎶</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="container">
-    <div class="avatar" id="avatar">A</div>
-    <h1 id="site-name">Anto Lancuba</h1>
-    <p class="bio" id="site-bio"></p>
-    <div class="socials" id="socials"></div>
+    <div class="avatar anim-in" id="avatar" style="animation-delay: 0s">A</div>
+    <h1 id="site-name" class="anim-in" style="animation-delay: 0.1s">Anto Lancuba</h1>
+    <p class="bio anim-in" id="site-bio" style="animation-delay: 0.2s"></p>
+    <div class="socials anim-in" id="socials" style="animation-delay: 0.3s"></div>
     <div id="sections"></div>
   </main>
 
@@ -31,6 +31,8 @@
       tiktok: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1 0-5.78c.27 0 .54.04.8.1v-3.5a6.37 6.37 0 0 0-.8-.05A6.34 6.34 0 0 0 3.15 15.3a6.34 6.34 0 0 0 10.86 4.43A6.3 6.3 0 0 0 16 15.38V8.74a8.26 8.26 0 0 0 4.84 1.56V6.85a4.84 4.84 0 0 1-1.25-.16Z"/></svg>',
       twitter: '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>',
     };
+
+    let animDelay = 0.4;
 
     fetch("/data/site-data.json")
       .then(r => r.json())
@@ -61,6 +63,7 @@
           a.target = "_blank";
           a.rel = "noopener noreferrer";
           a.setAttribute("aria-label", s.platform);
+          a.setAttribute("data-platform", s.platform);
           a.innerHTML = SOCIAL_ICONS[s.platform] || "";
           socialsEl.appendChild(a);
         });
@@ -69,7 +72,9 @@
         const sectionsEl = document.getElementById("sections");
         data.sections.forEach(section => {
           const h2 = document.createElement("h2");
-          h2.className = "section-title";
+          h2.className = "section-title anim-in";
+          h2.style.animationDelay = animDelay + "s";
+          animDelay += 0.08;
           h2.textContent = section.title;
           sectionsEl.appendChild(h2);
 
@@ -78,7 +83,9 @@
           section.links.forEach(link => {
             const a = document.createElement("a");
             a.href = "/api/track?id=" + encodeURIComponent(link.id);
-            a.className = "link-btn";
+            a.className = "link-btn anim-in";
+            a.style.animationDelay = animDelay + "s";
+            animDelay += 0.06;
             a.target = "_blank";
             a.rel = "noopener noreferrer";
             a.textContent = link.label;

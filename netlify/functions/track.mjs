@@ -1,11 +1,6 @@
 import { getStore } from "@netlify/blobs";
-import { readFileSync } from "fs";
-import { resolve, dirname } from "path";
-import { fileURLToPath } from "url";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-async function loadSiteData() {
+async function loadSiteData(reqUrl) {
   // Try blob store first (instant updates)
   try {
     const store = getStore("site-data");
@@ -14,9 +9,16 @@ async function loadSiteData() {
   } catch (e) {
     console.error("Failed to read site data from blob:", e);
   }
-  // Fall back to static file
-  const filePath = resolve(__dirname, "../../data/site-data.json");
-  return JSON.parse(readFileSync(filePath, "utf8"));
+  // Fall back to static file via fetch (Functions v2 compatible)
+  try {
+    const url = new URL("/data/site-data.json", reqUrl);
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`Static file fetch failed: ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    console.error("Failed to fetch static fallback:", e);
+    return null;
+  }
 }
 
 function findLinkUrl(data, linkId) {
@@ -39,7 +41,7 @@ export default async (req, context) => {
     return new Response("Missing id parameter", { status: 400 });
   }
 
-  const data = await loadSiteData();
+  const data = await loadSiteData(req.url);
   const targetUrl = findLinkUrl(data, id);
 
   if (!targetUrl) {

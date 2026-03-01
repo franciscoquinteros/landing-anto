@@ -1,17 +1,5 @@
 import { getStore } from "@netlify/blobs";
-
-function verifyAuth(req) {
-  const auth = req.headers.get("authorization") || "";
-  if (!auth.startsWith("Bearer ")) return false;
-  const authToken = auth.slice(7);
-  try {
-    const decoded = Buffer.from(authToken, "base64").toString("utf8");
-    const [password] = decoded.split(":");
-    return password === process.env.ADMIN_PASSWORD;
-  } catch {
-    return false;
-  }
-}
+import { verifyAuth } from "./lib/auth.mjs";
 
 export default async (req, context) => {
   if (!verifyAuth(req)) {

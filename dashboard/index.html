@@ -73,11 +73,38 @@
 
         <table id="metrics-table">
           <thead>
-            <tr><th>Link</th><th>ID</th><th>Clicks</th><th>Share</th></tr>
+            <tr><th>Link</th><th>ID</th><th>Clicks</th><th>Share</th><th>URL</th></tr>
           </thead>
           <tbody></tbody>
         </table>
         <button id="refresh-metrics" class="btn">Refresh</button>
+
+        <!-- Analytics Section -->
+        <div class="chart-section">
+          <div class="chart-header">
+            <h3>Click Analytics</h3>
+            <div class="date-filter">
+              <label for="date-range">Period</label>
+              <select id="date-range">
+                <option value="7">Last 7 days</option>
+                <option value="30" selected>Last 30 days</option>
+                <option value="90">Last 90 days</option>
+                <option value="0">All time</option>
+              </select>
+            </div>
+          </div>
+          <div id="clicks-chart"></div>
+          <div class="breakdowns">
+            <div class="breakdown-panel">
+              <h4>Referrers</h4>
+              <div id="referrer-breakdown"></div>
+            </div>
+            <div class="breakdown-panel">
+              <h4>Devices</h4>
+              <div id="device-breakdown"></div>
+            </div>
+          </div>
+        </div>
 
         <div class="ga-notice">
           <strong>Google Analytics</strong>

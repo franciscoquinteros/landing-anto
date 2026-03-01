@@ -2,8 +2,10 @@
   let token = sessionStorage.getItem("admin_token");
   let siteData = null;
   let metrics = {};
+  let allEvents = {};
   let currentSort = "most";
   const pendingLinkImages = new Map();
+  const SITE_URL = "https://antonellalancuba.com";
 
   const $ = (sel) => document.querySelector(sel);
   const $$ = (sel) => document.querySelectorAll(sel);
@@ -80,6 +82,7 @@
     $("#admin-panel").hidden = false;
     loadSiteData();
     loadMetrics();
+    loadEvents();
   }
 
   function showLogin() {
@@ -240,10 +243,28 @@
     entries.forEach((entry) => {
       const share = total > 0 ? ((entry.count / total) * 100).toFixed(1) : "0.0";
       const barWidth = Math.round((entry.count / maxClicks) * 100);
+      const prettyUrl = `${SITE_URL}/go/${encodeURIComponent(entry.id)}`;
       const tr = document.createElement("tr");
       if (entry.removed) tr.classList.add("removed-link");
-      tr.innerHTML = `<td>${entry.removed ? "<em>" + esc(entry.label) + "</em>" : esc(entry.label)}</td><td><code>${esc(entry.id)}</code></td><td>${entry.count}<div class="metric-bar" style="width: ${barWidth}%"></div></td><td class="share-cell">${share}%</td>`;
+      tr.innerHTML = `<td>${entry.removed ? "<em>" + esc(entry.label) + "</em>" : esc(entry.label)}</td><td><code>${esc(entry.id)}</code></td><td>${entry.count}<div class="metric-bar" style="width: ${barWidth}%"></div></td><td class="share-cell">${share}%</td><td class="url-cell"><span class="pretty-url">/go/${esc(entry.id)}</span><button class="copy-btn" data-url="${escAttr(prettyUrl)}">Copy</button></td>`;
       tbody.appendChild(tr);
+    });
+
+    // Attach copy handlers
+    tbody.querySelectorAll(".copy-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.url);
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove("copied");
+          }, 1500);
+        } catch {
+          showToast("Failed to copy", "error");
+        }
+      });
     });
   }
 
@@ -256,7 +277,7 @@
   $("#refresh-metrics").addEventListener("click", async () => {
     const btn = $("#refresh-metrics");
     setLoading(btn, true);
-    await loadMetrics();
+    await Promise.all([loadMetrics(), loadEvents()]);
     setLoading(btn, false);
   });
 
@@ -588,6 +609,188 @@
       setLoading(btn, false);
     }
   });
+
+  // --- Events & Analytics ---
+  async function loadEvents() {
+    try {
+      const res = await fetch("/api/events", { headers: authHeaders() });
+      if (res.ok) {
+        allEvents = await res.json();
+        renderAnalytics();
+      }
+    } catch (err) {
+      console.error("Failed to load events:", err);
+    }
+  }
+
+  function parseDevice(ua) {
+    if (!ua) return "Unknown";
+    const lower = ua.toLowerCase();
+    if (lower.includes("iphone") || lower.includes("ipad")) return "iOS";
+    if (lower.includes("android")) return "Android";
+    if (lower.includes("windows")) return "Windows";
+    if (lower.includes("macintosh") || lower.includes("mac os")) return "Mac";
+    if (lower.includes("linux")) return "Linux";
+    return "Other";
+  }
+
+  function filterEventsByDays(events, days) {
+    if (days === 0) return events;
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const cutoffISO = cutoff.toISOString();
+    return events.filter((e) => e.t >= cutoffISO);
+  }
+
+  function renderClicksChart(flatEvents, days) {
+    const container = $("#clicks-chart");
+    if (flatEvents.length === 0) {
+      container.innerHTML = '<div class="chart-empty">No click data yet. Events will appear after visitors click links.</div>';
+      return;
+    }
+
+    // Group events by date
+    const counts = {};
+    flatEvents.forEach((e) => {
+      const day = e.t.slice(0, 10);
+      counts[day] = (counts[day] || 0) + 1;
+    });
+
+    // Build date range
+    const numDays = days || 30;
+    const dates = [];
+    const today = new Date();
+    for (let i = numDays - 1; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      dates.push(d.toISOString().slice(0, 10));
+    }
+
+    // If "all time", use all dates in data
+    if (days === 0) {
+      const allDates = Object.keys(counts).sort();
+      if (allDates.length > 0) {
+        dates.length = 0;
+        const start = new Date(allDates[0]);
+        const end = new Date(allDates[allDates.length - 1]);
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          dates.push(d.toISOString().slice(0, 10));
+        }
+      }
+    }
+
+    if (dates.length === 0) {
+      container.innerHTML = '<div class="chart-empty">No data for this period.</div>';
+      return;
+    }
+
+    const values = dates.map((d) => counts[d] || 0);
+    const max = Math.max(...values, 1);
+
+    const barWidth = Math.max(12, Math.min(40, 600 / dates.length));
+    const gap = Math.max(2, barWidth * 0.2);
+    const chartW = dates.length * (barWidth + gap);
+    const chartH = 160;
+    const padTop = 10;
+    const padBottom = 24;
+    const barArea = chartH - padTop - padBottom;
+
+    let bars = "";
+    const showLabels = dates.length <= 31;
+
+    dates.forEach((date, i) => {
+      const v = values[i];
+      const h = Math.max(2, (v / max) * barArea);
+      const x = i * (barWidth + gap);
+      const y = chartH - padBottom - h;
+
+      bars += `<rect x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="3" fill="url(#barGrad)" opacity="${v > 0 ? 1 : 0.2}"/>`;
+
+      if (v > 0) {
+        bars += `<text x="${x + barWidth / 2}" y="${y - 4}" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="9">${v}</text>`;
+      }
+
+      if (showLabels) {
+        const label = date.slice(5); // MM-DD
+        bars += `<text x="${x + barWidth / 2}" y="${chartH - 4}" text-anchor="middle" fill="rgba(255,255,255,0.35)" font-size="8">${label}</text>`;
+      }
+    });
+
+    container.innerHTML = `<svg viewBox="0 0 ${chartW} ${chartH}" class="clicks-svg" preserveAspectRatio="xMinYMid meet">
+      <defs>
+        <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="var(--accent-violet)"/>
+          <stop offset="100%" stop-color="var(--accent-cyan)"/>
+        </linearGradient>
+      </defs>
+      ${bars}
+    </svg>`;
+  }
+
+  function renderBreakdown(containerId, data) {
+    const container = $(containerId);
+    if (!data || data.length === 0) {
+      container.innerHTML = '<div class="breakdown-empty">No data yet</div>';
+      return;
+    }
+
+    const total = data.reduce((s, d) => s + d.count, 0);
+    const max = data[0].count;
+    let html = "";
+
+    data.slice(0, 8).forEach((item) => {
+      const pct = total > 0 ? ((item.count / total) * 100).toFixed(0) : 0;
+      const width = max > 0 ? Math.round((item.count / max) * 100) : 0;
+      html += `<div class="breakdown-row">
+        <span class="breakdown-label">${esc(item.label)}</span>
+        <div class="breakdown-bar-track"><div class="breakdown-bar-fill" style="width:${width}%"></div></div>
+        <span class="breakdown-pct">${pct}%</span>
+      </div>`;
+    });
+
+    container.innerHTML = html;
+  }
+
+  function renderAnalytics() {
+    const days = parseInt($("#date-range").value);
+
+    // Flatten all events
+    let flatEvents = [];
+    for (const linkId of Object.keys(allEvents)) {
+      const events = allEvents[linkId];
+      if (Array.isArray(events)) {
+        flatEvents = flatEvents.concat(events);
+      }
+    }
+
+    const filtered = filterEventsByDays(flatEvents, days);
+
+    renderClicksChart(filtered, days);
+
+    // Referrer breakdown
+    const refCounts = {};
+    filtered.forEach((e) => {
+      const label = e.r || "Direct";
+      refCounts[label] = (refCounts[label] || 0) + 1;
+    });
+    const refData = Object.entries(refCounts)
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
+    renderBreakdown("#referrer-breakdown", refData);
+
+    // Device breakdown
+    const devCounts = {};
+    filtered.forEach((e) => {
+      const label = parseDevice(e.ua);
+      devCounts[label] = (devCounts[label] || 0) + 1;
+    });
+    const devData = Object.entries(devCounts)
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
+    renderBreakdown("#device-breakdown", devData);
+  }
+
+  $("#date-range").addEventListener("change", () => renderAnalytics());
 
   // --- Helpers ---
   function esc(str) {

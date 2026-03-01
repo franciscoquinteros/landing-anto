@@ -718,6 +718,52 @@ tr:hover td {
   border-color: var(--accent-violet);
 }
 
+/* ===== LINK PRETTY URL ROW ===== */
+.link-pretty-url-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-left: 48px;
+}
+
+.link-pretty-url {
+  flex: 1;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 0.75rem;
+  cursor: default;
+}
+
+.copy-link-btn {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--glass-border);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.75rem;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.2s var(--ease-out);
+}
+
+.copy-link-btn:hover {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+  background: rgba(34, 211, 238, 0.08);
+}
+
+.copy-link-btn.copied {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
 .section-actions {
   display: flex;
   gap: 0.5rem;

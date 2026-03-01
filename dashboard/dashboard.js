@@ -301,6 +301,7 @@
       section.links.forEach((link, li) => {
         const thumbStyle = link.image ? `background-image: url(${escAttr(link.image)})` : '';
         const thumbClass = link.image ? 'link-thumb-preview has-image' : 'link-thumb-preview';
+        const prettyLink = `${SITE_URL}/go/${encodeURIComponent(link.id)}`;
         html += `<div class="link-row" data-link-index="${li}">
           <div class="${thumbClass}" style="${thumbStyle}" data-link-id="${escAttr(link.id)}" title="Click to upload image">${link.image ? '' : '\u{1F4F7}'}</div>
           <input type="file" class="link-image-input" accept="image/*" hidden>
@@ -309,6 +310,10 @@
           <button class="move-up" title="Move up">&uarr;</button>
           <button class="move-down" title="Move down">&darr;</button>
           <button class="delete-link" title="Delete">&times;</button>
+        </div>
+        <div class="link-pretty-url-row">
+          <input type="text" class="link-pretty-url" value="${escAttr(prettyLink)}" placeholder="antonellalancuba.com/go/mi-link" readonly>
+          <button class="copy-link-btn" data-url="${escAttr(prettyLink)}">Copiar link</button>
         </div>`;
       });
 
@@ -392,6 +397,22 @@
       thumb.addEventListener("click", () => {
         const row = thumb.closest(".link-row");
         row.querySelector(".link-image-input").click();
+      });
+    });
+
+    container.querySelectorAll(".copy-link-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.url);
+          btn.textContent = "Copiado!";
+          btn.classList.add("copied");
+          setTimeout(() => {
+            btn.textContent = "Copiar link";
+            btn.classList.remove("copied");
+          }, 1500);
+        } catch {
+          showToast("No se pudo copiar", "error");
+        }
       });
     });
 

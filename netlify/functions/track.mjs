@@ -43,12 +43,6 @@ export default async (req, context) => {
     return new Response("Missing id parameter", { status: 400 });
   }
 
-  // Skip static file requests (e.g. style.css, favicon.ico)
-  // Link slugs never contain dots, so pass through to static serving
-  if (id.includes(".")) {
-    return;
-  }
-
   const data = await loadSiteData(req.url);
   if (!data) {
     return new Response("Site data unavailable", { status: 500 });

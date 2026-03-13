@@ -243,10 +243,10 @@
     entries.forEach((entry) => {
       const share = total > 0 ? ((entry.count / total) * 100).toFixed(1) : "0.0";
       const barWidth = Math.round((entry.count / maxClicks) * 100);
-      const prettyUrl = `${SITE_URL}/go/${encodeURIComponent(entry.id)}`;
+      const prettyUrl = `${SITE_URL}/${encodeURIComponent(entry.id)}`;
       const tr = document.createElement("tr");
       if (entry.removed) tr.classList.add("removed-link");
-      tr.innerHTML = `<td>${entry.removed ? "<em>" + esc(entry.label) + "</em>" : esc(entry.label)}</td><td><code>${esc(entry.id)}</code></td><td>${entry.count}<div class="metric-bar" style="width: ${barWidth}%"></div></td><td class="share-cell">${share}%</td><td class="url-cell"><span class="pretty-url">/go/${esc(entry.id)}</span><button class="copy-btn" data-url="${escAttr(prettyUrl)}">Copy</button></td>`;
+      tr.innerHTML = `<td>${entry.removed ? "<em>" + esc(entry.label) + "</em>" : esc(entry.label)}</td><td><code>${esc(entry.id)}</code></td><td>${entry.count}<div class="metric-bar" style="width: ${barWidth}%"></div></td><td class="share-cell">${share}%</td><td class="url-cell"><span class="pretty-url">/${esc(entry.id)}</span><button class="copy-btn" data-url="${escAttr(prettyUrl)}">Copy</button></td>`;
       tbody.appendChild(tr);
     });
 
@@ -301,7 +301,7 @@
       section.links.forEach((link, li) => {
         const thumbStyle = link.image ? `background-image: url(${escAttr(link.image)})` : '';
         const thumbClass = link.image ? 'link-thumb-preview has-image' : 'link-thumb-preview';
-        const prettyLink = `${SITE_URL}/go/${encodeURIComponent(link.id)}`;
+        const prettyLink = `${SITE_URL}/${encodeURIComponent(link.id)}`;
         html += `<div class="link-row" data-link-index="${li}">
           <div class="${thumbClass}" style="${thumbStyle}" data-link-id="${escAttr(link.id)}" title="Click to upload image">${link.image ? '' : '\u{1F4F7}'}</div>
           <input type="file" class="link-image-input" accept="image/*" hidden>
@@ -312,8 +312,9 @@
           <button class="delete-link" title="Delete">&times;</button>
         </div>
         <div class="link-pretty-url-row">
-          <input type="text" class="link-pretty-url" value="${escAttr(prettyLink)}" placeholder="antonellalancuba.com/go/mi-link" readonly>
+          <input type="text" class="link-pretty-url" value="${escAttr(prettyLink)}" placeholder="antonellalancuba.com/mi-link" readonly>
           <button class="copy-link-btn" data-url="${escAttr(prettyLink)}">Copiar link</button>
+          <button class="save-copy-btn" data-url="${escAttr(prettyLink)}">Guardar y copiar</button>
         </div>`;
       });
 
@@ -343,8 +344,7 @@
       btn.addEventListener("click", (e) => {
         const block = e.target.closest(".section-block");
         const si = parseInt(block.dataset.sectionIndex);
-        const id = "link-" + Date.now();
-        siteData.sections[si].links.push({ id, label: "", url: "" });
+        siteData.sections[si].links.push({ id: "link", label: "", url: "" });
         renderLinksEditor();
       });
     });
@@ -400,6 +400,25 @@
       });
     });
 
+    // Auto-update link ID and pretty URL from label
+    container.querySelectorAll(".link-label").forEach((input) => {
+      input.addEventListener("input", () => {
+        const row = input.closest(".link-row");
+        const block = row.closest(".section-block");
+        const si = parseInt(block.dataset.sectionIndex);
+        const li = parseInt(row.dataset.linkIndex);
+        const slug = slugify(input.value);
+        siteData.sections[si].links[li].id = slug;
+        const prettyUrl = `${SITE_URL}/${encodeURIComponent(slug)}`;
+        const urlRow = row.nextElementSibling;
+        if (urlRow && urlRow.classList.contains("link-pretty-url-row")) {
+          urlRow.querySelector(".link-pretty-url").value = prettyUrl;
+          urlRow.querySelector(".copy-link-btn").dataset.url = prettyUrl;
+          urlRow.querySelector(".save-copy-btn").dataset.url = prettyUrl;
+        }
+      });
+    });
+
     container.querySelectorAll(".copy-link-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
         try {
@@ -412,6 +431,44 @@
           }, 1500);
         } catch {
           showToast("No se pudo copiar", "error");
+        }
+      });
+    });
+
+    container.querySelectorAll(".save-copy-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        syncLinksFromDOM();
+        setLoading(btn, true);
+        try {
+          // Upload pending link images
+          for (const [linkId, imageBase64] of pendingLinkImages) {
+            const uploadRes = await fetch("/api/upload-link-image", {
+              method: "POST",
+              headers: authHeaders(),
+              body: JSON.stringify({ linkId, imageBase64 }),
+            });
+            if (!uploadRes.ok) throw new Error(`Image upload failed for ${linkId}`);
+            const uploadData = await uploadRes.json();
+            for (const section of siteData.sections) {
+              const link = section.links.find((l) => l.id === linkId);
+              if (link) { link.image = uploadData.image; break; }
+            }
+          }
+          pendingLinkImages.clear();
+
+          const res = await fetch("/api/save-data", {
+            method: "POST",
+            headers: authHeaders(),
+            body: JSON.stringify(siteData),
+          });
+          if (!res.ok) throw new Error("Save failed");
+
+          await navigator.clipboard.writeText(btn.dataset.url);
+          showToast("Guardado y link copiado!");
+        } catch (err) {
+          showToast("Error: " + err.message, "error");
+        } finally {
+          setLoading(btn, false);
         }
       });
     });
@@ -812,6 +869,16 @@
   }
 
   $("#date-range").addEventListener("change", () => renderAnalytics());
+
+  // --- Slugify ---
+  function slugify(text) {
+    return text
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      || "link";
+  }
 
   // --- Helpers ---
   function esc(str) {

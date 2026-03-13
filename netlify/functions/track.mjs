@@ -114,5 +114,5 @@ export default async (req, context) => {
 };
 
 export const config = {
-  path: ["/go/:id", "/api/track"],
+  path: ["/go/:id", "/api/track", "/:id"],
 };

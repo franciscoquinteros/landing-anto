@@ -39,43 +39,7 @@
     {
       "id": "eventos-savage",
       "title": "INVITACIONES A EVENTOS",
-      "links": [
-        {
-          "id": "invitaciones-kevindiserna-30deabril",
-          "label": "KEVIN DI SERNA - 30/4 ",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSd4kHp30fxjv900TfeqRx_tPW4ePDClzY6wRRuORqqxI_kTAQ/viewform?usp=header"
-        },
-        {
-          "id": "invictaciones-costa7070-viernes",
-          "label": "COSTA 7070 VIERNES 1/5",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSf_xBH6dKTZccA8bhNLeG_TdaBMARbEGwa9tiwZMQwT5SxYvg/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-costa7070-sabado",
-          "label": "COSTA 7070 SABADO 2/5",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScEvO99TkqBjBfT9hiCPeCkivp3vh1DTPUz1kaJ2xJInraWPQ/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-jet-jueves-departamento",
-          "label": "JET 30.4 - DEPARTAMENTO",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScv7xYFyYkEH1F_P-6M9MfXyQG5CgzvZF0OpAgsNiEF-y1T8Q/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-chinito-sabado",
-          "label": "1.5 CHINITO - CACHENGUE",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSciS8vVnsKuSzldWcp-snSWsIqiliTarpZxBJ6RYo5q0DBjEw/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-claracuve-juevescrobar",
-          "label": "CLARA CUVE - CROBAR 30.4",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScwQHKQnwSvnYJP6lHACZ_hiq7jQHUaMavqklXszwnJ5ktsaw/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-nachobolognani-viernes-crobar",
-          "label": "NACHO BOLOGNANI - VIERNES.15 - CROBAR",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSe_nefODM2qYrmpnJ-BaqqGgx0jMvGpjYKDqQU-h3q0HUSLCw/viewform?usp=publish-editor"
-        }
-      ]
+      "links": []
     },
     {
       "id": "section-1775163019879",
@@ -87,9 +51,9 @@
           "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=849&affId=AntoLancuba"
         },
         {
-          "id": "sashaautodromo-30deabril",
-          "label": "SASHA AUTODROMO - 30 DE ABRIL",
-          "url": "https://venti.com.ar/evento/bud-sessions-1-2gthr-arena-autodromo-ba-30-4/alancuba"
+          "id": "jet-sunset-sabado16demayo",
+          "label": "JET SUNSET - 16 DE MAYO SABADO",
+          "url": "https://venti.com.ar/evento/svg-prod-x-sunset-16-de-mayo-x-jet/alancuba"
         }
       ]
     }

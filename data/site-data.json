@@ -39,7 +39,13 @@
     {
       "id": "eventos-savage",
       "title": "INVITACIONES A EVENTOS",
-      "links": []
+      "links": [
+        {
+          "id": "invitaciones-costa7070-viernes8demayo",
+          "label": "COSTA 7070 - VIERNES 8 DE MAYO",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScRY4x-LFpx1h6JWCnWgd6qC46B7uxCz9k2z-YK1YTCuAtbwg/viewform?usp=header"
+        }
+      ]
     },
     {
       "id": "section-1775163019879",

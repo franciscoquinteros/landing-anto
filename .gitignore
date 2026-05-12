@@ -6,3 +6,7 @@
 
 # Dependencies
 node_modules
+
+# Claude Code local settings (may contain credentials in allow-list)
+.claude/settings.local.json
+

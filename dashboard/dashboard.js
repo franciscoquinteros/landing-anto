@@ -312,7 +312,8 @@
           <button class="delete-link" title="Delete">&times;</button>
         </div>
         <div class="link-pretty-url-row">
-          <input type="text" class="link-pretty-url" value="${escAttr(prettyLink)}" placeholder="antonellalancuba.com/mi-link" readonly>
+          <span class="pretty-url-prefix">antonellalancuba.com/</span>
+          <input type="text" class="link-slug" value="${escAttr(link.id)}" placeholder="mi-link">
           <button class="copy-link-btn" data-url="${escAttr(prettyLink)}">Copiar link</button>
           <button class="save-copy-btn" data-url="${escAttr(prettyLink)}">Guardar y copiar</button>
         </div>`;
@@ -358,6 +359,8 @@
         const label = siteData.sections[si].links[li].label || "this link";
         const confirmed = await showConfirm("Delete Link", `Delete "${label}"?`);
         if (!confirmed) return;
+        const removedLink = siteData.sections[si].links[li];
+        pendingLinkImages.delete(removedLink);
         siteData.sections[si].links.splice(li, 1);
         renderLinksEditor();
         showToast("Link deleted");
@@ -400,22 +403,46 @@
       });
     });
 
-    // Auto-update link ID and pretty URL from label
-    container.querySelectorAll(".link-label").forEach((input) => {
+    // Update link ID and pretty URL from slug input
+    container.querySelectorAll(".link-slug").forEach((input) => {
       input.addEventListener("input", () => {
-        const row = input.closest(".link-row");
-        const block = row.closest(".section-block");
+        const urlRow = input.closest(".link-pretty-url-row");
+        const linkRow = urlRow.previousElementSibling;
+        const block = linkRow.closest(".section-block");
         const si = parseInt(block.dataset.sectionIndex);
-        const li = parseInt(row.dataset.linkIndex);
+        const li = parseInt(linkRow.dataset.linkIndex);
+        // Light sanitization while typing (allow trailing dashes)
+        const sanitized = input.value
+          .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9-]+/g, "-")
+          .replace(/^-+/, "");
+        if (input.value !== sanitized) {
+          const pos = input.selectionStart;
+          input.value = sanitized;
+          input.setSelectionRange(pos, pos);
+        }
+        siteData.sections[si].links[li].id = sanitized;
+        const prettyUrl = `${SITE_URL}/${encodeURIComponent(sanitized)}`;
+        urlRow.querySelector(".copy-link-btn").dataset.url = prettyUrl;
+        urlRow.querySelector(".save-copy-btn").dataset.url = prettyUrl;
+        const thumb = linkRow.querySelector(".link-thumb-preview");
+        if (thumb) thumb.dataset.linkId = sanitized;
+      });
+
+      // Full slugify on blur (trim trailing dashes)
+      input.addEventListener("blur", () => {
+        const urlRow = input.closest(".link-pretty-url-row");
+        const linkRow = urlRow.previousElementSibling;
+        const block = linkRow.closest(".section-block");
+        const si = parseInt(block.dataset.sectionIndex);
+        const li = parseInt(linkRow.dataset.linkIndex);
         const slug = slugify(input.value);
+        input.value = slug;
         siteData.sections[si].links[li].id = slug;
         const prettyUrl = `${SITE_URL}/${encodeURIComponent(slug)}`;
-        const urlRow = row.nextElementSibling;
-        if (urlRow && urlRow.classList.contains("link-pretty-url-row")) {
-          urlRow.querySelector(".link-pretty-url").value = prettyUrl;
-          urlRow.querySelector(".copy-link-btn").dataset.url = prettyUrl;
-          urlRow.querySelector(".save-copy-btn").dataset.url = prettyUrl;
-        }
+        urlRow.querySelector(".copy-link-btn").dataset.url = prettyUrl;
+        urlRow.querySelector(".save-copy-btn").dataset.url = prettyUrl;
       });
     });
 
@@ -438,21 +465,34 @@
     container.querySelectorAll(".save-copy-btn").forEach((btn) => {
       btn.addEventListener("click", async () => {
         syncLinksFromDOM();
+
+        // Validate no duplicate slugs
+        const allIds = [];
+        for (const sec of siteData.sections) {
+          for (const l of sec.links) {
+            if (allIds.includes(l.id)) {
+              showToast(`Slug duplicado: "${l.id}". Cada link debe tener un slug unico.`, "error");
+              return;
+            }
+            allIds.push(l.id);
+          }
+        }
+
         setLoading(btn, true);
         try {
           // Upload pending link images
-          for (const [linkId, imageBase64] of pendingLinkImages) {
+          if (pendingLinkImages.size > 0) {
+            showToast("Subiendo im\u00e1genes...");
+          }
+          for (const [link, imageBase64] of pendingLinkImages) {
             const uploadRes = await fetch("/api/upload-link-image", {
               method: "POST",
               headers: authHeaders(),
-              body: JSON.stringify({ linkId, imageBase64 }),
+              body: JSON.stringify({ linkId: link.id, imageBase64 }),
             });
-            if (!uploadRes.ok) throw new Error(`Image upload failed for ${linkId}`);
+            if (!uploadRes.ok) throw new Error(`Fallo la subida de imagen para ${link.id}`);
             const uploadData = await uploadRes.json();
-            for (const section of siteData.sections) {
-              const link = section.links.find((l) => l.id === linkId);
-              if (link) { link.image = uploadData.image; break; }
-            }
+            link.image = uploadData.image;
           }
           pendingLinkImages.clear();
 
@@ -461,7 +501,7 @@
             headers: authHeaders(),
             body: JSON.stringify(siteData),
           });
-          if (!res.ok) throw new Error("Save failed");
+          if (!res.ok) throw new Error("Fallo al guardar");
 
           await navigator.clipboard.writeText(btn.dataset.url);
           showToast("Guardado y link copiado!");
@@ -481,15 +521,17 @@
         const block = row.closest(".section-block");
         const si = parseInt(block.dataset.sectionIndex);
         const li = parseInt(row.dataset.linkIndex);
-        const linkId = siteData.sections[si].links[li].id;
+        const link = siteData.sections[si].links[li];
         const thumb = row.querySelector(".link-thumb-preview");
 
+        thumb.classList.add("loading");
+        thumb.textContent = "";
         processLinkImageFile(file, (dataUrl, base64) => {
-          pendingLinkImages.set(linkId, base64);
+          pendingLinkImages.set(link, base64);
+          thumb.classList.remove("loading");
           thumb.style.backgroundImage = `url(${dataUrl})`;
-          thumb.textContent = "";
           thumb.classList.add("has-image");
-          showToast("Image ready \u2014 save to apply");
+          showToast("Imagen lista \u2014 guard\u00e1 para aplicar");
         });
       });
     });
@@ -505,6 +547,11 @@
         const li = parseInt(row.dataset.linkIndex);
         section.links[li].label = row.querySelector('[data-field="label"]').value;
         section.links[li].url = row.querySelector('[data-field="url"]').value;
+        const urlRow = row.nextElementSibling;
+        if (urlRow && urlRow.classList.contains("link-pretty-url-row")) {
+          const slugInput = urlRow.querySelector(".link-slug");
+          if (slugInput) section.links[li].id = slugify(slugInput.value);
+        }
       });
     });
   }
@@ -518,26 +565,36 @@
 
   $("#save-links").addEventListener("click", async () => {
     syncLinksFromDOM();
+
+    // Validate no duplicate slugs
+    const allIds = [];
+    for (const section of siteData.sections) {
+      for (const link of section.links) {
+        if (allIds.includes(link.id)) {
+          showToast(`Slug duplicado: "${link.id}". Cada link debe tener un slug unico.`, "error");
+          return;
+        }
+        allIds.push(link.id);
+      }
+    }
+
     const btn = $("#save-links");
     setLoading(btn, true);
 
     try {
       // Upload pending link images first
-      for (const [linkId, imageBase64] of pendingLinkImages) {
+      if (pendingLinkImages.size > 0) {
+        showToast("Subiendo im\u00e1genes...");
+      }
+      for (const [link, imageBase64] of pendingLinkImages) {
         const uploadRes = await fetch("/api/upload-link-image", {
           method: "POST",
           headers: authHeaders(),
-          body: JSON.stringify({ linkId, imageBase64 }),
+          body: JSON.stringify({ linkId: link.id, imageBase64 }),
         });
-        if (!uploadRes.ok) throw new Error(`Image upload failed for ${linkId}`);
+        if (!uploadRes.ok) throw new Error(`Fallo la subida de imagen para ${link.id}`);
         const uploadData = await uploadRes.json();
-        for (const section of siteData.sections) {
-          const link = section.links.find((l) => l.id === linkId);
-          if (link) {
-            link.image = uploadData.image;
-            break;
-          }
-        }
+        link.image = uploadData.image;
       }
       pendingLinkImages.clear();
 
@@ -546,8 +603,8 @@
         headers: authHeaders(),
         body: JSON.stringify(siteData),
       });
-      if (!res.ok) throw new Error("Save failed");
-      showToast("Saved! Changes are live!");
+      if (!res.ok) throw new Error("Fallo al guardar");
+      showToast("\u00a1Guardado! Los cambios est\u00e1n en vivo.");
     } catch (err) {
       showToast("Error saving: " + err.message, "error");
     } finally {
@@ -637,7 +694,7 @@
       preview.textContent = "";
       preview.style.backgroundImage = `url(${dataUrl})`;
       $("#upload-image").disabled = false;
-      showToast("Image ready to upload");
+      showToast("Imagen lista para subir");
     };
     img.src = URL.createObjectURL(file);
   }
@@ -657,9 +714,17 @@
       const data = await res.json();
       siteData.image = data.image;
       selectedImageBase64 = null;
-      showToast("Image uploaded!");
+
+      // Auto-save siteData so KV is updated immediately
+      const saveRes = await fetch("/api/save-data", {
+        method: "POST",
+        headers: authHeaders(),
+        body: JSON.stringify(siteData),
+      });
+      if (!saveRes.ok) throw new Error("Imagen subida pero fallo el guardado");
+      showToast("Imagen subida y guardada!");
     } catch (err) {
-      showToast("Upload failed: " + err.message, "error");
+      showToast("Error al subir: " + err.message, "error");
     } finally {
       setLoading(btn, false);
       btn.disabled = !selectedImageBase64;

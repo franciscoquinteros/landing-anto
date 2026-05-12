@@ -718,6 +718,25 @@ tr:hover td {
   border-color: var(--accent-violet);
 }
 
+.link-thumb-preview.loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.link-thumb-preview.loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  border-top-color: var(--accent-violet);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
 /* ===== LINK PRETTY URL ROW ===== */
 .link-pretty-url-row {
   display: flex;
@@ -727,16 +746,30 @@ tr:hover td {
   padding-left: 48px;
 }
 
-.link-pretty-url {
+.pretty-url-prefix {
+  color: var(--text-secondary);
+  font-family: monospace;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.link-slug {
   flex: 1;
   padding: 0.3rem 0.6rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: var(--radius-sm);
   background: rgba(0, 0, 0, 0.15);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-family: monospace;
   font-size: 0.75rem;
-  cursor: default;
+  transition: border-color 0.3s var(--ease-out);
+}
+
+.link-slug:focus {
+  outline: none;
+  border-color: var(--accent-violet);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
 .copy-link-btn {

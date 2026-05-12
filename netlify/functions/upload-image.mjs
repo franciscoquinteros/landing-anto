@@ -38,11 +38,14 @@ export default async (req, context) => {
       sha: imageSha,
     });
 
+    // Cache-bust the image URL so browsers fetch the new file instead of the cached one
+    const versionedImage = `/data/profile.jpg?v=${Date.now()}`;
+
     // Update site-data.json to reference the image
     const dataPath = "data/site-data.json";
     const { data: fileData } = await octokit.repos.getContent({ owner, repo, path: dataPath });
     const siteData = JSON.parse(Buffer.from(fileData.content, "base64").toString("utf8"));
-    siteData.image = "/data/profile.jpg";
+    siteData.image = versionedImage;
 
     const updatedContent = Buffer.from(JSON.stringify(siteData, null, 2) + "\n").toString("base64");
     await octokit.repos.createOrUpdateFileContents({
@@ -54,7 +57,7 @@ export default async (req, context) => {
       sha: fileData.sha,
     });
 
-    return Response.json({ ok: true, image: "/data/profile.jpg" });
+    return Response.json({ ok: true, image: versionedImage });
   } catch (e) {
     console.error("Failed to upload image:", e);
     return Response.json({ error: "Failed to upload image" }, { status: 500 });

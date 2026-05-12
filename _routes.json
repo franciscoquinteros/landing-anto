@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": ["/", "/index.html", "/style.css", "/admin", "/admin.html", "/dashboard", "/dashboard/", "/dashboard/dashboard.js", "/dashboard/dashboard.css", "/dashboard/index.html", "/portfolio", "/portfolio/", "/portfolio/index.html", "/portfolio/portfolio.css", "/portfolio/portfolio.js", "/data/*", "/*.css", "/*.js", "/*.jpg", "/*.png", "/*.svg", "/*.ico", "/*.html", "/*.json", "/*.xml", "/*.txt", "/*.woff", "/*.woff2"]
+}

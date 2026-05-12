@@ -1,0 +1,16 @@
+name = "landing-anto"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "SITE_DATA"
+id = "8b0e34df262c42e59afd16280a635fae"
+
+[[kv_namespaces]]
+binding = "CLICKS"
+id = "f967397575744a5f800405360b07029f"
+
+[[kv_namespaces]]
+binding = "EVENTS"
+id = "8e7c84b2cdff4a25ab68a20305719550"

@@ -42,6 +42,11 @@ export async function onRequestPost(context) {
     return Response.json({ ok: true, image: versionedImage });
   } catch (e) {
     console.error("Failed to upload image:", e);
-    return Response.json({ error: "Failed to upload image" }, { status: 500 });
+    return Response.json({
+      error: "Failed to upload image",
+      detail: e?.message || String(e),
+      status: e?.status,
+      response: e?.response?.data,
+    }, { status: 500 });
   }
 }

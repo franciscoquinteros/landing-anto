@@ -100,6 +100,11 @@
           "id": "ingresos-1926-amk",
           "label": "19:26 AMK 22/8",
           "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=950&affId=antonellalancuba"
+        },
+        {
+          "id": "ingresos-oostil-opentoclose",
+          "label": "OOSTIL OPEN TO CLOSE 25/7",
+          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=932&affId=antonellalancuba"
         }
       ]
     }

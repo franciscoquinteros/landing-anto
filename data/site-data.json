@@ -90,6 +90,11 @@
           "id": "ingresos-khen-palacioalsina",
           "label": "KHEN - PALACIO ALSINA - 4/7",
           "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=926&affId=antonellalancuba"
+        },
+        {
+          "id": "ingresos-mellino-palacioalsina",
+          "label": "MELLINO - PALACIO ALSINA 22/8",
+          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=950&affId=antonellalancuba"
         }
       ]
     }

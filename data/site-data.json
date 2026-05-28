@@ -62,19 +62,9 @@
       "title": "COMPRA TU TICKET",
       "links": [
         {
-          "id": "jet-sunset-sabado16demayo",
-          "label": "JET SUNSET - 16 DE MAYO SABADO",
-          "url": "https://venti.com.ar/evento/svg-prod-x-sunset-16-de-mayo-x-jet/alancuba"
-        },
-        {
           "id": "jet-sunset-mihaipopoviciu-13dejunio",
           "label": "JET SUNSET - MIHAI POPOVICIU - 13 DE JUNIO",
           "url": "https://venti.com.ar/evento/crew-savage-x-mihai-popoviciu-x-jet-sunset-13-de-junio/alancuba"
-        },
-        {
-          "id": "jet-sunset-ubbah-20dejunio",
-          "label": "JET SUNSET - UBBAH - 20 DE JUNIO",
-          "url": "https://venti.com.ar/evento/desert-in-me-x-ubbah-x-jet-sunset-x-20-de-junio/alancuba"
         },
         {
           "id": "saharz-espaciochn-14dejunio-preferiado",
@@ -85,6 +75,11 @@
           "id": "kolombo-palacio-alsina",
           "label": "KOLOMBO - PALACIO ALSINA",
           "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=928&affId=antonellalancuba"
+        },
+        {
+          "id": "ingresos-johndigweed-autodromo",
+          "label": "JOHN DIGWEED OPEN AIR 19/9",
+          "url": "https://venti.com.ar/evento/john-digweed-bedrock-buenos-aires-2gthr-open-air-19-09-26/alancuba"
         }
       ]
     }

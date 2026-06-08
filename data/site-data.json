@@ -46,11 +46,6 @@
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSd-iAnw4JdyhOthpWacBLsRKw2a-bLlcnXFgZAm1IbE_7WX3Q/viewform?usp=publish-editor"
         },
         {
-          "id": "invitaciones-crobar-viernes-carmenlisa",
-          "label": "CARMEN LISA - CROBAR VIERNES ",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScRe37xTreA2zelbGlusCCIjTa3FoZP3_ELXsKQ1y1Nm7TGmw/viewform?usp=dialog"
-        },
-        {
           "id": "invitaciones-costa7070-viernes",
           "label": "COSTA 7070 VIERNES",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeldVQMa9kANR-u-80tdGGghA-6nZ6ER_hnv-kUKM7l1Xx4lQ/viewform?usp=publish-editor"
@@ -59,6 +54,11 @@
           "id": "invitaciones-costa7070-sabado",
           "label": "COSTA 7070 SABADO",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSdx-wlzXdL5mZHBxnURUt3-yYctSPqxLZ9C3R8Ue03zV7kzOA/viewform?usp=publish-editor"
+        },
+        {
+          "id": "invitaciones-tokyo-jueves11dejunio",
+          "label": "JUEVES 11.6 - TOKYO",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScNN26qWdOMb_eTIA5pfQiCeVxIbcugRu3L5vvrn_9lQ6noww/viewform?usp=publish-editor"
         }
       ]
     },

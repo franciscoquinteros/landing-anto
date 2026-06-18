@@ -41,11 +41,6 @@
       "title": "INVITACIONES A EVENTOS",
       "links": [
         {
-          "id": "comunicadoras-invitaciones-saharz",
-          "label": "COMUNICADORAS SAHAR Z ",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSd-iAnw4JdyhOthpWacBLsRKw2a-bLlcnXFgZAm1IbE_7WX3Q/viewform?usp=publish-editor"
-        },
-        {
           "id": "invitaciones-costa7070-viernes",
           "label": "COSTA 7070 VIERNES",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSdLmGrhYw_qVavr80ljdIBs8KE-TCL11CNtMKn2zrNHs_YcyQ/viewform?usp=publish-editor"
@@ -54,21 +49,6 @@
           "id": "invitaciones-costa7070-sabado",
           "label": "COSTA 7070 SABADO",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLScpyJ_K85xPCiwdVbvv5MpJLueQxzw9j2KMjYNPDxauJc_kFg/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-tokyo-jueves11dejunio",
-          "label": "JUEVES 11.6 - TOKYO",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScNN26qWdOMb_eTIA5pfQiCeVxIbcugRu3L5vvrn_9lQ6noww/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-jetsunset-mihai",
-          "label": "SABADO 13.6 - JET SUNSET - MIHAI POPOVICIU",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSccZWevqAf4PBYqxc_pShJgmLYFlEfE87u1yJGEDRGnAXrTZQ/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-bnn-preferiado-vasami",
-          "label": "BNN 14.6 - VASAMI RADA - PRE FERIADO",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLSdnYgsPSszzAX8IZ_togy_3AUjBk_SfyetvkWn-PrUjesgv_w/viewform?usp=publish-editor"
         }
       ]
     },
@@ -76,16 +56,6 @@
       "id": "section-1775163019879",
       "title": "COMPRA TU TICKET",
       "links": [
-        {
-          "id": "jet-sunset-mihaipopoviciu-13dejunio",
-          "label": "JET SUNSET - MIHAI POPOVICIU - 13 DE JUNIO",
-          "url": "https://venti.com.ar/evento/crew-savage-x-mihai-popoviciu-x-jet-sunset-13-de-junio/alancuba"
-        },
-        {
-          "id": "saharz-espaciochn-14dejunio-preferiado",
-          "label": "SAHAR Z - ESPACIO CHN - 14 DE JUNIO",
-          "url": "https://passify.link/invitacion/1236KDGA1Z"
-        },
         {
           "id": "kolombo-palacio-alsina",
           "label": "KOLOMBO - PALACIO ALSINA",
@@ -95,11 +65,6 @@
           "id": "ingresos-johndigweed-autodromo",
           "label": "JOHN DIGWEED OPEN AIR 19/9",
           "url": "https://venti.com.ar/evento/john-digweed-bedrock-buenos-aires-2gthr-open-air-19-09-26/alancuba"
-        },
-        {
-          "id": "ingresos-marcelovasami-bnn-preferiado",
-          "label": "MARCELO VASAMI BNN 14/6",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=946&affId=antonellalancuba"
         },
         {
           "id": "ingresos-khen-palacioalsina",
@@ -120,6 +85,11 @@
           "id": "ingresos-oostil-opentoclose",
           "label": "OOSTIL OPEN TO CLOSE 25/7",
           "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=932&affId=antonellalancuba"
+        },
+        {
+          "id": "ingresos-maxstyler-alsina",
+          "label": "MAZ STYLER ALSINA 8/8",
+          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=1023&affId=AntonellaLancuba"
         }
       ]
     }

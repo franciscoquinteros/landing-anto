@@ -41,19 +41,14 @@
       "title": "INVITACIONES A EVENTOS",
       "links": [
         {
-          "id": "invitaciones-costa7070-viernes-19junio",
+          "id": "invitaciones-costa7070-viernes-26junio",
           "label": "COSTA 7070 VIERNES",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScHEd_tj43m7lJXKkcE2f88y7P7lCs5ibLG1DRo8v5YXodx6g/viewform?usp=dialog"
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLScTV-ku8BoJt_I4klW7gsfozSm0HafOj_fxenVwefZE76cXuw/viewform?usp=publish-editor"
         },
         {
           "id": "invitaciones-costa7070-sabado27junio",
           "label": "COSTA 7070 SABADO",
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeimUoF0wuf5_E774C4qpvd7LLXyIYTsVfMrvESquYILJppqQ/viewform?usp=publish-editor"
-        },
-        {
-          "id": "invitaciones-chinito-sabado20junio",
-          "label": "CHINITO SABADO 20.6",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScXkaVY7dsx4gn7Hd--qomKJJpOvaoB23MdKlRsnkUvs9ILGA/viewform?usp=dialog"
         }
       ]
     },

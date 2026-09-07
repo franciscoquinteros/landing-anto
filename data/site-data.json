@@ -51,9 +51,9 @@
           "url": "https://docs.google.com/forms/d/e/1FAIpQLSeimUoF0wuf5_E774C4qpvd7LLXyIYTsVfMrvESquYILJppqQ/viewform?usp=header"
         },
         {
-          "id": "invitaciones-kolombo-palacio-alsina",
-          "label": "KOLOMBO PALACIO ALSINA",
-          "url": "https://docs.google.com/forms/d/e/1FAIpQLScYOL4S7zuDCbJws07HZ8dAU6eZiogfBqusoSTkq6fABjG3Fg/viewform?usp=publish-editor"
+          "id": "invitaciones-layton-giordani",
+          "label": "LAYTON GIORDANI",
+          "url": "https://docs.google.com/forms/d/e/1FAIpQLSf_4_1WPXH1A3trG2HHpnSRu-5mAveYYMeEldD0mdoyVIGnEg/viewform?usp=dialog"
         }
       ]
     },
@@ -62,39 +62,9 @@
       "title": "COMPRA TU TICKET",
       "links": [
         {
-          "id": "kolombo-palacio-alsina",
-          "label": "KOLOMBO - PALACIO ALSINA",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=928&affId=antonellalancuba"
-        },
-        {
           "id": "ingresos-johndigweed-autodromo",
           "label": "JOHN DIGWEED OPEN AIR 19/9",
           "url": "https://venti.com.ar/evento/john-digweed-bedrock-buenos-aires-2gthr-open-air-19-09-26/alancuba"
-        },
-        {
-          "id": "ingresos-khen-palacioalsina",
-          "label": "KHEN - PALACIO ALSINA - 4/7",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=926&affId=antonellalancuba"
-        },
-        {
-          "id": "ingresos-mellino-palacioalsina",
-          "label": "MELLINO - PALACIO ALSINA 22/8",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=937&affId=antonellalancuba"
-        },
-        {
-          "id": "ingresos-1926-amk",
-          "label": "19:26 AMK 22/8",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=950&affId=antonellalancuba"
-        },
-        {
-          "id": "ingresos-oostil-opentoclose",
-          "label": "OOSTIL OPEN TO CLOSE 25/7",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=932&affId=antonellalancuba"
-        },
-        {
-          "id": "ingresos-maxstyler-alsina",
-          "label": "MAZ STYLER ALSINA 8/8",
-          "url": "https://planout.ar/eventos/es/comprarEvento?idEvento=1023&affId=AntonellaLancuba"
         }
       ]
     }

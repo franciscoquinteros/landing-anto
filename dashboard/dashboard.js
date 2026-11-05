@@ -11,6 +11,17 @@
   const $$ = (sel) => document.querySelectorAll(sel);
 
   // --- Toast Notifications ---
+  // save-data returns 200 with a `warning` when KV saved but the GitHub backup failed
+  async function warnIfBackupFailed(res) {
+    try {
+      const data = await res.clone().json();
+      if (data.warning) {
+        console.warn(data.warning);
+        showToast(data.warning, "error", 8000);
+      }
+    } catch {}
+  }
+
   function showToast(message, type = "success", duration = 3000) {
     const container = $("#toast-container");
     const toast = document.createElement("div");
@@ -502,6 +513,7 @@
             body: JSON.stringify(siteData),
           });
           if (!res.ok) throw new Error("Fallo al guardar");
+          await warnIfBackupFailed(res);
 
           await navigator.clipboard.writeText(btn.dataset.url);
           showToast("Guardado y link copiado!");
@@ -604,6 +616,7 @@
         body: JSON.stringify(siteData),
       });
       if (!res.ok) throw new Error("Fallo al guardar");
+      await warnIfBackupFailed(res);
       showToast("\u00a1Guardado! Los cambios est\u00e1n en vivo.");
     } catch (err) {
       showToast("Error saving: " + err.message, "error");
@@ -722,6 +735,7 @@
         body: JSON.stringify(siteData),
       });
       if (!saveRes.ok) throw new Error("Imagen subida pero fallo el guardado");
+      await warnIfBackupFailed(saveRes);
       showToast("Imagen subida y guardada!");
     } catch (err) {
       showToast("Error al subir: " + err.message, "error");

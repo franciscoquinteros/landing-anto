@@ -37,14 +37,15 @@
       ]
     },
     {
-      "id": "eventos-savage",
-      "title": "INVITACIONES A EVENTOS",
-      "links": []
-    },
-    {
       "id": "section-1775163019879",
       "title": "COMPRA TU TICKET",
-      "links": []
+      "links": [
+        {
+          "id": "solomun-pde",
+          "label": "SOLOMUN PDE",
+          "url": "https://wearebombo.app.link/7deBcPwfR7b"
+        }
+      ]
     }
   ]
 }
